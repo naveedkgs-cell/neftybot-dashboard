@@ -1,178 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><style>
-@font-face {
-  font-family: "Optimistic";
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Optimistic Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
-}
-:where(html) {
-  font-family: "Optimistic", system-ui, sans-serif;
-}
-:where(code, pre, kbd, samp) {
-  font-family: "Optimistic Mono", ui-monospace, monospace;
-}
-</style>
+<head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NeftyBot V2</title>
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#00ff88">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<script src="https://cdn.tailwindcss.com"></script>
 <style>
-body{background:#080c10;color:#e5e7eb;font-family:system-ui,-apple-system}
-.card{background:#141a22;border:1px solid #1f2937;border-radius:18px}
-.glow{box-shadow:0 0 20px rgba(0,255,136,0.15)}
-input{background:#0b1118;border:1px solid #1f2937}
+body{background:#0f1214;color:#fff;font-family:system-ui;padding:20px;margin:0}
+.card{background:#1a1f24;border-radius:16px;padding:20px;max-width:480px;margin:auto}
+input{width:100%;background:#121518;border:1px solid #2a3239;color:#fff;padding:12px;border-radius:10px;margin:8px 0 14px 0}
+.btn{padding:12px 16px;border-radius:10px;border:none;font-weight:700}
+.save{background:#00e676;color:#000;width:60%}
+.clear{background:#2a3239;color:#fff;width:38%}
 </style>
 </head>
-<body class="p-3 pb-20">
-<div class="max-w-[480px] mx-auto">
-  <!-- Header -->
-  <div class="flex justify-between items-center mb-4">
-    <div><h1 class="text-[26px] font-black tracking-tight">🚀 NeftyBot <span class="text-[#00ff88]">V2</span></h1>
-    <p class="text-[11px] text-gray-400 -mt-1">Dhan + MCX Crude + Forex • PWA Mobile App</p></div>
-    <button id="installBtn" class="hidden bg-[#00ff88] text-black px-4 py-2 rounded-full text-xs font-bold">📲 Install App</button>
-  </div>
-
-  <!-- Dhan Connect - Secured -->
-  <div class="card p-4 mb-4 glow">
-    <div class="flex justify-between items-center mb-3">
-      <h2 class="font-bold text-sm">🔐 Dhan API - Secured</h2>
-      <span id="liveStatus" class="text-[10px] px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full">PAPER MODE • Sun</span>
-    </div>
-    <input id="clientId" placeholder="Dhan Client ID (ex: 1113333377)" class="w-full p-3 rounded-xl text-white text-sm mb-2 outline-none focus:border-green-500">
-    <div class="relative mb-2">
-      <input id="token" type="password" placeholder="Dhan Access Token (JWT)" class="w-full p-3 rounded-xl text-white text-sm pr-12 outline-none focus:border-green-500">
-      <button onclick="toggleToken()" class="absolute right-2 top-2 p-2 text-gray-400">👁️</button>
-    </div>
-    <div class="grid grid-cols-2 gap-2">
-      <button onclick="saveDhan()" class="bg-[#00ff88] text-black p-3 rounded-xl font-black text-sm">Save & Connect</button>
-      <button onclick="clearDhan()" class="bg-[#1f2937] p-3 rounded-xl font-bold text-sm">Clear</button>
-    </div>
-    <p class="text-[10px] text-gray-500 mt-2">Token is saved only in your phone, never sent to server. Hidden with ••••</p>
-  </div>
-
-  <!-- Live Prices - V2 with better charts -->
-  <div class="grid grid-cols-2 gap-3 mb-4">
-    <div class="card p-3">
-      <p class="text-[11px] text-gray-400">NIFTY 50</p>
-      <p class="text-xl font-black" id="niftyPrice">22,500.00</p>
-      <p class="text-[10px] text-green-400">▲ 0.45% • Paper</p>
-      <div class="mt-2 h-[60px] bg-gradient-to-t from-green-500/10 to-transparent rounded flex items-end p-1"><div class="w-full h-[70%] bg-green-500/30 rounded" style="clip-path: polygon(0 80%, 20% 60%, 40% 70%, 60% 30%, 80% 40%, 100% 0, 100% 100%, 0 100%)"></div></div>
-    </div>
-    <div class="card p-3">
-      <p class="text-[11px] text-orange-400">CRUDE OIL MCX</p>
-      <p class="text-xl font-black" id="crudePrice">7,120.00</p>
-      <p class="text-[10px] text-orange-400">MCX • Night 11:30PM</p>
-      <div class="mt-2 h-[60px] bg-gradient-to-t from-orange-500/10 to-transparent rounded flex items-end"><div class="w-full h-[55%] bg-orange-500/30 rounded" style="clip-path: polygon(0 50%, 25% 30%, 50% 60%, 75% 20%, 100% 45%, 100% 100%, 0 100%)"></div></div>
-    </div>
-    <div class="card p-3 col-span-2 flex justify-between items-center">
-      <div><p class="text-[11px] text-blue-400">FOREX USD/INR</p><p class="text-xl font-black" id="forexPrice">83.45</p><p class="text-[10px] text-gray-400">Dhan Forex API</p></div>
-      <div class="text-right"><p class="text-[11px]">Market</p><p class="text-sm font-bold text-green-400">OPEN 24x5</p><button onclick="refreshForex()" class="text-[10px] mt-1 bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full">↻ Refresh</button></div>
-    </div>
-  </div>
-
-  <!-- TradingView Fixed Chart -->
-  <div class="card p-2 mb-4">
-    <p class="text-[11px] font-bold mb-2 px-2">📈 Live Chart - Nifty (Fixed)</p>
-    <div id="tv_chart" style="height:260px;border-radius:12px;overflow:hidden"></div>
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-    <script>
-      new TradingView.widget({
-        "autosize": true, "symbol": "BSE:SENSEX", "interval": "5", "timezone": "Asia/Kolkata",
-        "theme": "dark", "style": "1", "locale": "en", "toolbar_bg": "#141a22",
-        "enable_publishing": false, "hide_top_toolbar": false, "save_image": false,
-        "container_id": "tv_chart"
-      });
-    </script>
-    <p class="text-[9px] text-gray-500 p-2 text-center">SENSEX chart (NIFTY NSE restricted on free embed). Dhan API se NIFTY live Tuesday se.</p>
-  </div>
-
-  <!-- Paper Trading V2 -->
-  <div class="card p-4 mb-4">
-    <div class="flex justify-between items-center mb-3">
-      <h2 class="font-black">📊 Paper Trading V2</h2>
-      <span class="text-xs bg-[#00ff88]/20 text-[#00ff88] px-2 py-1 rounded-full font-bold">P&L: ₹<span id="pnl">20</span></span>
-    </div>
-    <div class="flex gap-2 mb-3">
-      <select id="symbol" class="flex-1 p-3 rounded-xl text-sm"><option>NIFTY</option><option>CRUDEOIL</option><option>USDINR</option><option>GOLD</option></select>
-      <select id="orderType" class="w-[90px] p-3 rounded-xl text-sm"><option>MARKET</option><option>LIMIT</option></select>
-      <input id="qty" type="number" value="1" min="1" class="w-[70px] p-3 rounded-xl text-sm text-center">
-    </div>
-    <div class="grid grid-cols-2 gap-3">
-      <button onclick="trade('BUY')" class="bg-[#00c950] hover:bg-[#00a843] p-4 rounded-xl font-black text-[15px]">BUY ▲</button>
-      <button onclick="trade('SELL')" class="bg-[#e7000b] hover:bg-[#c10009] p-4 rounded-xl font-black text-[15px]">SELL ▼</button>
-    </div>
-    <div id="trades" class="mt-4 space-y-2 max-h-[200px] overflow-y-auto">
-      <div class="flex justify-between text-[13px] p-2 bg-[#0b1118] rounded"><span>SELL 1 NIFTY @ 74.46</span><span class="text-red-400">-50</span></div>
-      <div class="flex justify-between text-[13px] p-2 bg-[#0b1118] rounded"><span>SELL 1 NIFTY @ 31.97</span><span class="text-red-400">-50</span></div>
-      <div class="flex justify-between text-[13px] p-2 bg-[#0b1118] rounded"><span>BUY 1 NIFTY @ 52.48</span><span class="text-green-400">+120</span></div>
-    </div>
-  </div>
-
-  <div class="card p-3 text-center">
-    <p class="text-[11px] font-bold text-[#00ff88]">📲 Mobile App Install Ready</p>
-    <p class="text-[10px] text-gray-400 mt-1">Chrome menu → Add to Home Screen → App ban jayega. Ya upar Install App button dabao.</p>
-  </div>
+<body>
+<div class="card">
+<h2>NeftyBot V2</h2>
+<label>Dhan Client ID</label>
+<input id="cid" placeholder="1113333377">
+<label>Dhan Access Token (JWT)</label>
+<input id="tok" type="password" placeholder="Paste JWT Token">
+<div style="display:flex;gap:8px;margin-top:10px">
+<button class="btn save" onclick="localStorage.setItem('dhan_cid',cid.value);localStorage.setItem('dhan_tok',tok.value);alert('V2 Connected!')">Save & Connect</button>
+<button class="btn clear" onclick="localStorage.clear();cid.value='';tok.value=''">Clear</button>
 </div>
-
-<script>
-let pnl=20;
-let deferredPrompt;
-const installBtn=document.getElementById('installBtn');
-window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt=e; installBtn.classList.remove('hidden'); });
-installBtn.addEventListener('click', async () => { if(deferredPrompt){ deferredPrompt.prompt(); const r=await deferredPrompt.userChoice; deferredPrompt=null; installBtn.classList.add('hidden'); }});
-
-function toggleToken(){ const i=document.getElementById('token'); i.type = i.type==='password' ? 'text' : 'password'; }
-function saveDhan(){
-  const c=document.getElementById('clientId').value.trim();
-  const t=document.getElementById('token').value.trim();
-  if(!c||!t){alert('Client ID aur Token dalo bhai!');return;}
-  localStorage.setItem('dhan_client',c);
-  localStorage.setItem('dhan_token',t);
-  document.getElementById('liveStatus').innerText='SAVED • ENCRYPTED';
-  document.getElementById('liveStatus').className='text-[10px] px-2 py-1 bg-green-500/20 text-green-400 rounded-full';
-  alert('✅ Saved! Ab token chhupa hua hai aur phone me safe hai.');
-  document.getElementById('token').value='•••••••••••••••••••••••••••••';
-}
-function clearDhan(){ localStorage.clear(); location.reload(); }
-function trade(type){
-  const sym=document.getElementById('symbol').value;
-  const qty=document.getElementById('qty').value||1;
-  const price=(Math.random()*100+20).toFixed(2);
-  const profit = type==='BUY' ? Math.floor(Math.random()*150+20) : -Math.floor(Math.random()*80+10);
-  pnl+=profit;
-  const div=document.getElementById('trades');
-  const row=document.createElement('div');
-  row.className='flex justify-between text-[13px] p-2 bg-[#0b1118] rounded animate-pulse';
-  row.innerHTML=`<span>${type} ${qty} ${sym} @ ${price}</span><span class="${profit>0?'text-green-400':'text-red-400'}">${profit>0?'+':''}${profit}</span>`;
-  div.prepend(row);
-  document.getElementById('pnl').innerText=pnl;
-  if('vibrate' in navigator) navigator.vibrate(50);
-}
-function refreshForex(){
-  document.getElementById('forexPrice').innerText=(83+Math.random()).toFixed(2);
-  document.getElementById('niftyPrice').innerText=(22500+Math.random()*100).toFixed(2);
-  document.getElementById('crudePrice').innerText=(7120+Math.random()*50).toFixed(2);
-}
-// Load saved
-const savedC=localStorage.getItem('dhan_client');
-const savedT=localStorage.getItem('dhan_token');
-if(savedC) document.getElementById('clientId').value=savedC;
-if(savedT) document.getElementById('token').value='•••••••••••••••••••••••••••••';
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js'); }
-setInterval(refreshForex, 5000);
-</script>
-<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
+<p style="font-size:11px;color:#7a848d;margin-top:10px">Token phone me hi save hota hai.</p>
+</div>
+</body>
 </html>
